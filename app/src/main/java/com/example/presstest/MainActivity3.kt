@@ -164,8 +164,8 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
         var getSpeed: String = String.format("%.3f", location.speed)
 
         txtSpeed.setText(getSpeed)
-        speed = mLastLocation!!.distanceTo(location).toDouble()
-        var calSpeed: String = String.format("%.3f", speed)
+
+
 
 
 
