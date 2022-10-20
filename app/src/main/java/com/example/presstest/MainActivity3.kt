@@ -1,7 +1,5 @@
 package com.example.presstest
 
-import androidx.appcompat.app.AppCompatActivity
-
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
@@ -18,16 +16,21 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
-import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Math.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.pow
+import kotlin.time.ExperimentalTime
+
+
 
 
 @Suppress("UNNECESSARY_SAFE_CALL")
@@ -50,8 +53,22 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
     private val txtDistance: TextView by lazy { findViewById(R.id.txtDistance) }
     private val txtKcal: TextView by lazy { findViewById(R.id.txtKcal) }
 
-    private var speed: Double = 0.0
-    private var sumTime: Int = 0
+    private var timerTask: Timer? = null
+    private var time = 0
+    private var isRunning = false
+
+
+    private var speed = 0
+
+
+
+    var theta = 0.0
+    var dist:kotlin.Double = 0.0
+    var bef_lat = 0.0
+    var bef_long:kotlin.Double = 0.0
+    var cur_lat:kotlin.Double = 0.0
+    var cur_long:kotlin.Double = 0.0
+
 
     private val retrofit = Retrofit.Builder().baseUrl("http://parkbomin.iptime.org:18000/")
         .addConverterFactory(GsonConverterFactory.create()).build()
@@ -79,6 +96,7 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
         btnStartUpdates.setOnClickListener {
             if (checkPermissionForLocation(this)) {
                 startLocationUpdates()
+                ridingStart()
                 btnStartUpdates.isEnabled = false
                 btnStopUpdates.isEnabled = true
             }
@@ -86,6 +104,7 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
 
         btnStopUpdates.setOnClickListener {
             stoplocationUpdates()
+            reset()
             txtTime.text = "Updates Stoped"
             btnStartUpdates.isEnabled = true
             btnStopUpdates.isEnabled = false
@@ -149,10 +168,44 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
         }
     }
 
+
+
+
+
+    private fun ridingStart(){
+        timerTask = kotlin.concurrent.timer(period = 10){
+            time++
+            val sec = time /100
+            val milli = time % 100
+
+            runOnUiThread {
+                txtRidingTime.text = "$sec"
+            }
+        }
+    }
+//    private fun ridingStop(){
+//        if ()
+//    }
+    private fun reset() {
+        timerTask?.cancel() // timerTask가 null이 아니라면 cancel() 호출
+
+        time = 0 // 시간저장 변수 초기화
+        isRunning = false // 현재 진행중인지 판별하기 위한 Boolean변수 false 세팅
+        txtRidingTime.text = "0" // 시간(초) 초기화
+//        milliText.text = "00" // 시간(밀리초) 초기화
+
+//        startBtn.text ="시작"
+//        lap_Layout.removeAllViews() // Layout에 추가한 기록View 모두 삭제
+//        index = 1
+    }
+
+
+
+    @OptIn(ExperimentalTime::class)
     override fun onLocationChanged(location: Location) {
         // New location has now been determined
-
         mLastLocation = location
+
         val date: Date = Calendar.getInstance().time
         val sdf = SimpleDateFormat("hh:mm:ss a")
         txtTime.text = "Updated at : " + sdf.format(date)
@@ -160,10 +213,9 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
         txtLong.text = "LONGITUDE : " + mLastLocation.longitude
         // You can now create a LatLng Object for use with maps
 
-        var delaTime: Double = 0.0
         var getSpeed: String = String.format("%.3f", location.speed)
-
         txtSpeed.setText(getSpeed)
+
 
 
 
@@ -189,13 +241,6 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
                     Log.e("RETRO_ERR", "Error")
                 }
             })
-
-
-
-
-
-
-
 
 
     }
@@ -234,6 +279,28 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
             }
         } else {
             true
+        }
+    }
+
+    object DistanceManager {
+
+        private const val R = 6372.8 * 1000
+
+        /**
+         * 두 좌표의 거리를 계산한다.
+         *
+         * @param lat1 위도1
+         * @param lon1 경도1
+         * @param lat2 위도2
+         * @param lon2 경도2
+         * @return 두 좌표의 거리(m)
+         */
+        fun getDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Int {
+            val dLat = Math.toRadians(lat2 - lat1)
+            val dLon = Math.toRadians(lon2 - lon1)
+            val a = sin(dLat / 2).pow(2.0) + sin(dLon / 2).pow(2.0) * cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2))
+            val c = 2 * asin(sqrt(a))
+            return (R * c).toInt()
         }
     }
 
