@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity4">
+
+    <View
+        android:id="@+id/circle_center"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/ridingcircle"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/tvSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/circle_center"
+        app:layout_constraintStart_toStartOf="@id/circle_center"
+        app:layout_constraintEnd_toEndOf="@id/circle_center"
+        app:layout_constraintBottom_toBottomOf="@id/circle_center"
+        android:text="50Km"
+        android:textSize="100sp"
+
+        />
+
+    <TextView
+        android:id="@+id/tv1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="주행시간"
+        android:textSize="30sp"
+        app:layout_constraintTop_toBottomOf="@id/circle_center"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        />
+
+    <TextView
+        android:id="@+id/tvRidingTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1시간 45분 30초"
+        android:textSize="50sp"
+        app:layout_constraintTop_toBottomOf="@id/tv1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+        />
+
+    <TextView
+        android:id="@+id/tv2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="거리"
+        android:textSize="30sp"
+        app:layout_constraintTop_toBottomOf="@id/tvRidingTime"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="15km"
+        android:textSize="50sp"
+        app:layout_constraintTop_toBottomOf="@id/tv2"
+        app:layout_constraintStart_toStartOf="@id/tv2"
+        />
+
+    <TextView
+        android:id="@+id/tv3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="칼로리"
+        android:textSize="30sp"
+        app:layout_constraintTop_toBottomOf="@id/tvRidingTime"
+        app:layout_constraintStart_toEndOf="@id/tv2"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        />
+
+    <TextView
+        android:id="@+id/tvKcal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv3"
+        app:layout_constraintStart_toStartOf="@id/tv3"
+        android:text="500kcal"
+        android:textSize="50sp"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnStopRiding"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginRight="50dp"
+        android:src="@drawable/pause"
+        app:fabCustomSize="80dp"
+        app:layout_constraintEnd_toStartOf="@id/btnStartRiding"
+        app:layout_constraintTop_toTopOf="@id/btnStartRiding"
+        />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnStartRiding"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="50dp"
+        android:src="@drawable/play_one"
+        app:fabCustomSize="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnMoveMap"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginLeft="50dp"
+        app:layout_constraintStart_toEndOf="@id/btnStartRiding"
+        app:layout_constraintTop_toTopOf="@id/btnStartRiding"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

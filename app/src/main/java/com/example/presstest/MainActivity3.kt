@@ -38,9 +38,11 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
     private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
     private val INTERVAL: Long = 2000
     private val FASTEST_INTERVAL: Long = 1000
-    lateinit var mLastLocation: Location
+    private var mLastLocation: Location? = null
     internal lateinit var mLocationRequest: LocationRequest
     private val REQUEST_PERMISSION_LOCATION = 10
+    private var lastKnowLocation: Location? = null
+    private var nowLastLocation: Location? = null
 
     private val btnStartUpdates: Button by lazy { findViewById(R.id.btn_start_upds) }
     private val btnStopUpdates: Button by lazy { findViewById(R.id.btn_stop_upds) }
@@ -99,6 +101,7 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
                 ridingStart()
                 btnStartUpdates.isEnabled = false
                 btnStopUpdates.isEnabled = true
+
             }
         }
 
@@ -199,48 +202,88 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
 //        index = 1
     }
 
+//  private fun getGpsLocation(): Double {
+//        var deltaTime = 0.0
+//        var deltaDist = 0.0
+//        if (lastKnowLocation == null){
+//            lastKnowLocation = nowLastLocation
+//        }
+//        if (lastKnowLocation != null && nowLastLocation != null){
+//            var lat1 = lastKnowLocation!!.latitude
+//            var lng1 = lastKnowLocation!!.longitude
+//            var lat2 = nowLastLocation!!.latitude
+//            var lng2 = nowLastLocation!!.longitude
+//
+//            deltaTime = (nowLastLocation!!.time.toDouble() - lastKnowLocation!!.time.toDouble()) / 1000.0
+//
+//            if (deltaDist > 0.05){
+//                deltaDist = DistanceManager.getDistance(lat1, lng1, lat2, lng2).toDouble()
+//                txtDistance.text =  deltaDist.toString()
+//
+//                lastKnowLocation = nowLastLocation
+//                return deltaDist
+//            }
+//            lastKnowLocation = nowLastLocation
+//        }
+//        return  0.0
+//    }
+
 
 
     @OptIn(ExperimentalTime::class)
     override fun onLocationChanged(location: Location) {
-        // New location has now been determined
+        val sdf = SimpleDateFormat("hh:mm:ss a")
+        var deltaTime = 0.0
+        var getSpeed = String.format("%.3f", location.speed)
+        txtSpeed.text = getSpeed
+
+        if (mLastLocation != null){
+            deltaTime = (location.time - mLastLocation!!.time) / 1000.0
+            txtDistance.text = mLastLocation!!.distanceTo(location).toString()
+//            speed = mLastLocation!!.distanceTo(location).toInt() / deltaTime.toInt()
+            val formatLastData = sdf.format(mLastLocation!!.time)
+            txtRidingTime.setText(formatLastData)
+        }
         mLastLocation = location
 
-        val date: Date = Calendar.getInstance().time
-        val sdf = SimpleDateFormat("hh:mm:ss a")
-        txtTime.text = "Updated at : " + sdf.format(date)
-        txtLat.text = "LATITUDE : " + mLastLocation.latitude
-        txtLong.text = "LONGITUDE : " + mLastLocation.longitude
-        // You can now create a LatLng Object for use with maps
-
-        var getSpeed: String = String.format("%.3f", location.speed)
-        txtSpeed.setText(getSpeed)
-
-
-
-
-
-
-
-        val data : LoacationData = LoacationData(mLastLocation.latitude.toFloat(), mLastLocation.longitude.toFloat())
-
-        service.locationPost(data)
-            .enqueue(object : Callback<LoacationData> {
-                override fun onResponse(call: Call<LoacationData>, response: Response<LoacationData>) {
-                    if (response.isSuccessful) {
-                        if (response.code() == 200) {
-
-                            var result: LoacationData? = response.body()
-                            Log.d("YMC", "onResponse 성공: " + result?.toString());
-
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<LoacationData>, t: Throwable) {
-                    Log.e("RETRO_ERR", "Error")
-                }
-            })
+        // New location has now been determined
+//        mLastLocation = location
+//
+//        val date: Date = Calendar.getInstance().time
+//        val sdf = SimpleDateFormat("hh:mm:ss a")
+//        txtTime.text = "Updated at : " + sdf.format(date)
+//        txtLat.text = "LATITUDE : " + mLastLocation.latitude
+//        txtLong.text = "LONGITUDE : " + mLastLocation.longitude
+//        // You can now create a LatLng Object for use with maps
+//
+//        var getSpeed: String = String.format("%.3f", location.speed)
+//        txtSpeed.setText(getSpeed)
+//
+//
+//
+//
+//
+//
+//
+//        val data : LoacationData = LoacationData(mLastLocation.latitude.toFloat(), mLastLocation.longitude.toFloat())
+//
+//        service.locationPost(data)
+//            .enqueue(object : Callback<LoacationData> {
+//                override fun onResponse(call: Call<LoacationData>, response: Response<LoacationData>) {
+//                    if (response.isSuccessful) {
+//                        if (response.code() == 200) {
+//
+//                            var result: LoacationData? = response.body()
+//                            Log.d("YMC", "onResponse 성공: " + result?.toString());
+//
+//                        }
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<LoacationData>, t: Throwable) {
+//                    Log.e("RETRO_ERR", "Error")
+//                }
+//            })
 
 
     }
