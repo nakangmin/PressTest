@@ -1,43 +1,138 @@
 package com.example.presstest
 
-import androidx.appcompat.app.AppCompatActivity
+import android.Manifest
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.location.Location
+import android.os.Build
 import android.os.Bundle
-import android.webkit.WebChromeClient
-import android.webkit.WebSettings
-import android.webkit.WebView
+import android.widget.FrameLayout
+import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.google.protobuf.DescriptorProtos
+import com.jusqre.greenpath.util.LocationStore
+import com.skt.Tmap.TMapGpsManager
+import com.skt.Tmap.TMapMarkerItem
+import com.skt.Tmap.TMapPoint
+import com.skt.Tmap.TMapPolyLine
+import com.skt.Tmap.TMapView
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : AppCompatActivity(), TMapGpsManager.onLocationChangedCallback {
+
+    var API_Key = "l7xxf8a0d7c16d01466a8bae0f6451de98be"
+
+    var speed = 0.0
+
+    private val _map = MutableLiveData<TMapView>()
+    val map: LiveData<TMapView>
+        get() = _map
+
+    private lateinit var currentPosition: Location
+
+
+    private val text: TextView by lazy {findViewById(R.id.tvtv)}
+    private val text1: TextView by lazy {findViewById(R.id.tvtv1)}
+    private val text2: TextView by lazy {findViewById(R.id.tvtv2)}
+
+    lateinit var tMapPointStart: TMapPoint
+    lateinit var TMapPointEnd: TMapPoint
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val webView: WebView = findViewById(R.id.webViewMap)
-        webView.apply {
-
-            webChromeClient = WebChromeClient() //클릭시 새창 안뜨게
-            settings.javaScriptEnabled = true // 새창띄우기 허용여부
-            settings.setSupportMultipleWindows(true)//메타태크 허용여부
-            settings.javaScriptCanOpenWindowsAutomatically = true//화면사이즈 맞추기 허용 여부
-            settings.loadWithOverviewMode = true//화면 줌 허용여부
-            settings.setSupportZoom(true)//화면 줌 허용여부
-            settings.builtInZoomControls = true//화면 확대 축소 허용여부
-//            settings.useWideViewPort = true
-//            settings.loadWithOverviewMode = true
+        _map.value = TMapView(this).apply {
+            this.setSKTMapApiKey(API_Key)
+        }
 
 
-            settings.cacheMode = WebSettings.LOAD_NO_CACHE
+        map.value?.let {
+            setUpGPS()
+        }
+        LocationStore.lastLocation.observe(this) {
+            onLocationUpdated(it)
+        }
+        initMap()
 
 
-            webView.setInitialScale(92)
+    }
+    private fun initMap() {
+        findViewById<FrameLayout>(R.id.tmapViewContainer).addView(map.value)
+    }
 
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun setUpGPS() {
+        val gps = TMapGpsManager(this).apply {
+            minTime = 100
+            minDistance = 5f
+            provider = TMapGpsManager.GPS_PROVIDER
+            setLocationCallback()
+        }
 
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                1
+            ) //위치권한 탐색 허용 관련 내용
+        }
+        gps.OpenGps()
+        map.value?.moveCamera(gps.location.longitude, gps.location.latitude)
+    }
 
+    override fun onLocationChange(location: Location) {
+        LocationStore.updateLocation(location)
+    }
 
-
-
-
-            val url = "https://jasla.duckdns.org/html/mapmarker.html"
-            webView.loadUrl(url)
+    private fun onLocationUpdated(location: Location) {
+        if (!::currentPosition.isInitialized) {
+            currentPosition = location
+            println("not initialized")
+        } else {
+            currentPosition = location
+        }
+        map.value?.let {
+            it.moveCamera(location.longitude, location.latitude)
+            it.setUserMarker(location)
         }
     }
+
+    private fun TMapView.setUserMarker(location: Location) {
+        this.addMarkerItem("currentPosition", TMapMarkerItem().apply {
+            longitude = location.longitude
+            latitude = location.latitude
+        })
+    }
+
+    private fun TMapView.moveCamera(longitude: Double, latitude: Double) {
+        this.setLocationPoint(longitude, latitude)
+        this.setCenterPoint(longitude, latitude)
+    }
+
+    private fun Bitmap.rotate(bearing: Float): Bitmap {
+        val matrix = Matrix().apply {
+            postRotate(bearing)
+        }
+        return Bitmap.createBitmap(this, 0, 0, this.width, this.height, matrix, true)
+    }
+
+
+
+
 }

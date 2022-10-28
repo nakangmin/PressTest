@@ -194,13 +194,14 @@ class MainActivity4 : AppCompatActivity(), LocationListener {
             var sec = time / 100
             runOnUiThread {
 
-                if (sec == 6){
+                if (sec == 60){
                     sec = 0
                     time = 0
                     i++
                 }
                 val min = i
-                tvRidingTime.text = " $min 분 $sec 초"
+                val hour = 0
+                tvRidingTime.text = "$hour 시간 $min 분 $sec 초"
             }
         }
     }

@@ -240,7 +240,7 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
         if (mLastLocation != null){
             deltaTime = (location.time - mLastLocation!!.time) / 1000.0
             txtDistance.text = mLastLocation!!.distanceTo(location).toString()
-//            speed = mLastLocation!!.distanceTo(location).toInt() / deltaTime.toInt()
+            speed = mLastLocation!!.distanceTo(location).toInt() / deltaTime.toInt()
             val formatLastData = sdf.format(mLastLocation!!.time)
             txtRidingTime.setText(formatLastData)
         }
@@ -265,25 +265,25 @@ class MainActivity3 : AppCompatActivity(), LocationListener {
 //
 //
 //
-//        val data : LoacationData = LoacationData(mLastLocation.latitude.toFloat(), mLastLocation.longitude.toFloat())
-//
-//        service.locationPost(data)
-//            .enqueue(object : Callback<LoacationData> {
-//                override fun onResponse(call: Call<LoacationData>, response: Response<LoacationData>) {
-//                    if (response.isSuccessful) {
-//                        if (response.code() == 200) {
-//
-//                            var result: LoacationData? = response.body()
-//                            Log.d("YMC", "onResponse 성공: " + result?.toString());
-//
-//                        }
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<LoacationData>, t: Throwable) {
-//                    Log.e("RETRO_ERR", "Error")
-//                }
-//            })
+        val data : LoacationData = LoacationData(mLastLocation!!.latitude.toFloat(), mLastLocation!!.longitude.toFloat())
+
+        service.locationPost(data)
+            .enqueue(object : Callback<LoacationData> {
+                override fun onResponse(call: Call<LoacationData>, response: Response<LoacationData>) {
+                    if (response.isSuccessful) {
+                        if (response.code() == 200) {
+
+                            var result: LoacationData? = response.body()
+                            Log.d("YMC", "onResponse 성공: " + result?.toString());
+
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<LoacationData>, t: Throwable) {
+                    Log.e("RETRO_ERR", "Error")
+                }
+            })
 
 
     }
