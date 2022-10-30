@@ -1,9 +1,5 @@
 package com.example.presstest
 
-import android.Manifest
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.location.Location
@@ -13,15 +9,12 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.protobuf.DescriptorProtos
 import com.jusqre.greenpath.util.LocationStore
 import com.skt.Tmap.TMapGpsManager
 import com.skt.Tmap.TMapMarkerItem
 import com.skt.Tmap.TMapPoint
-import com.skt.Tmap.TMapPolyLine
 import com.skt.Tmap.TMapView
 
 
@@ -78,20 +71,20 @@ class MainActivity : AppCompatActivity(), TMapGpsManager.onLocationChangedCallba
             setLocationCallback()
         }
 
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                1
-            ) //위치권한 탐색 허용 관련 내용
-        }
+//        if (ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//            && ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_COARSE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            requestPermissions(
+//                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+//                1
+//            ) //위치권한 탐색 허용 관련 내용
+//        }
         gps.OpenGps()
         map.value?.moveCamera(gps.location.longitude, gps.location.latitude)
     }
